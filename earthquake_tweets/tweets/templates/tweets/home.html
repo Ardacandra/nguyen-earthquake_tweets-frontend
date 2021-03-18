@@ -1,0 +1,67 @@
+{% extends "tweets/base.html" %}
+
+{% block content %}
+<main>
+  <div class="container">
+    <h2>Welcome to Earthquake Tweets <span class="icon-emo-happy"></span></h2>
+    <hr>
+    <section class="text-center mb-4">
+      <div class="container">
+        <div class="row">
+          <div class = "col-3">
+            <button type="button" class="btn btn-primary btn-lg submit-button">Get Tweets</button>
+          </div>
+          <div class = "col-9">
+            <ul class="list group">
+              <li class="list-group-item list-group-item-primary">Number of tweets scraped : <b>{{ num_tweets }}</b></li>
+              <li class="list-group-item list-group-item-danger">Number of relevant tweets : <b>{{ num_relevant }}</b></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <table class="table table-bordered">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col" style="width: 20%">Created at</th>
+            <th scope="col" style="width: 10%">Name</th>
+            <th scope="col" style="width: 70%">Tweet text</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tweet in latest_tweets_list %}
+            {% if tweet.is_relevant %}
+            <tr class="table-danger">
+            {% else %}
+            <tr class="table-success">
+            {% endif %}
+              <th scope="row">{{tweet.created_at}}</th>
+              <td>{{tweet.name}}</td>
+              <td>{{tweet.tweet_text}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    </section>
+  </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script>
+    jQuery(document).on('click', ".submit-button", function () {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'ajax_accept_request' %}",
+        data: {
+          'csrfmiddlewaretoken': '{{csrf_token}}',
+        },
+        dataType: 'json',
+        cache: 'false',
+        success: function (data) {
+          setInterval("location.reload()", 100);
+        }
+      });
+
+    });
+</script>
+{% endblock content %}
